@@ -1,11 +1,11 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup
 
 """
 Сайты, на основе которых будет скрипт:
     https://tproger.ru
-    https://habr.com
-    https://xakep.ru
 """
 # Главная ссылка для парсинга
 url = 'https://tproger.ru'
@@ -30,7 +30,25 @@ for item in all_articles_hrefs:
     all_articles_dict[item_text] = item_href
 # Парсинг информации внутри статей
 for article_name, article_href in all_articles_dict.items():
-    article_name = article_name.rstrip('\n')
+    # article_name = article_name.rstrip('\n')
 
     req = requests.get(url=article_href, headers=headers)
     src = req.text
+
+    soup = BeautifulSoup(src, 'lxml')
+
+    article_title = soup.find(class_='single__title').text
+    article_text = soup.find(class_='single__content').text
+    footer_to_delete = soup.find(class_='footer-meta').text
+    article_text = article_text.replace(footer_to_delete, '')
+
+    article_code = soup.find(class_='single__content')
+    image_block = article_code.find_all('a', class_='flex lightbox')
+
+    article_img = {}
+    for img in image_block:
+        image_href = img.get('href')
+
+    # print(f'СТАТЬЯ: {article_title}')
+    # print(article_text)
+    # print(f'Картинки из статьи {image_href}')
