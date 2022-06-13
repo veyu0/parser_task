@@ -30,7 +30,7 @@ for item in all_articles_hrefs:
     all_articles_dict[item_text] = item_href
 # Парсинг информации внутри статей
 for article_name, article_href in all_articles_dict.items():
-    # article_name = article_name.rstrip('\n')
+    #article_name = article_name.rstrip('\n')
 
     req = requests.get(url=article_href, headers=headers)
     src = req.text
@@ -45,10 +45,12 @@ for article_name, article_href in all_articles_dict.items():
     article_code = soup.find(class_='single__content')
     image_block = article_code.find_all('a', class_='flex lightbox')
 
-    article_img = {}
+    image_href_list = []
     for img in image_block:
         image_href = img.get('href')
+        image_href_list.append(image_href)
 
-    # print(f'СТАТЬЯ: {article_title}')
-    # print(article_text)
-    # print(f'Картинки из статьи {image_href}')
+    print(f'СТАТЬЯ: {article_title}')
+    print(article_text)
+    for image in image_href_list:
+        print(f'Картинка: {image}')
