@@ -1,5 +1,3 @@
-import re
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -7,8 +5,17 @@ from bs4 import BeautifulSoup
 Сайты, на основе которых будет скрипт:
     https://tproger.ru
 """
-# Главная ссылка для парсинга
-url = 'https://tproger.ru'
+print('Этот скрипт работает на основе сайта https://tproger.ru')
+print('Скрипт может парсить актуальные статьи с главной страницы, а также статьи по определенным тегам, например Python')
+print('Чтобы парсить страницы по тегам это нужно указать в ссылке, например https://tproger.ru/tag/python/')
+
+# Параметры для парсинга
+url = str(input('Введите ссылку на сайт: '))
+#TODO написать скрипт корректирующий длинну строки
+N = int(input('Введите длину строки: '))
+save_pics = str(input('Сохранить картинки в виде ссылок? y/n: '))
+#TODO дописать скрипт по сохранению в файл
+save_file = str(input('Сохранить информацию в файл? y/n: '))
 # Заголовки, чтобы сайт не принял нас за бота
 headers = {
     "Accept": "*/*",
@@ -31,26 +38,30 @@ for item in all_articles_hrefs:
 # Парсинг информации внутри статей
 for article_name, article_href in all_articles_dict.items():
     #article_name = article_name.rstrip('\n')
-
+    # Берем за основу новую ссылку
     req = requests.get(url=article_href, headers=headers)
     src = req.text
-
+    # Создаем новый объект супа
     soup = BeautifulSoup(src, 'lxml')
-
+    # Собираем заголовок статьи, текст и удаляем футтер
     article_title = soup.find(class_='single__title').text
     article_text = soup.find(class_='single__content').text
     footer_to_delete = soup.find(class_='footer-meta').text
     article_text = article_text.replace(footer_to_delete, '')
-
+    # Ищем ссылки на картинки
     article_code = soup.find(class_='single__content')
     image_block = article_code.find_all('a', class_='flex lightbox')
-
+    # Помещаем ссылки на картинки в список
     image_href_list = []
     for img in image_block:
         image_href = img.get('href')
         image_href_list.append(image_href)
-
+    # Выводим статьи и картинки
     print(f'СТАТЬЯ: {article_title}')
-    print(article_text)
-    for image in image_href_list:
-        print(f'Картинка: {image}')
+    print(f'ТЕКСТ СТАТЬИ: {article_text}')
+    if save_pics == 'y':
+        for image in image_href_list:
+            print(f'Картинка: {image}')
+
+    with open('result.txt', 'w', encoding='utf-8') as file:
+        file.write(f'{article_title}\n{article_text}')
