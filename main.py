@@ -1,10 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-"""
-Сайты, на основе которых будет скрипт:
-    https://tproger.ru
-"""
 print('Этот скрипт работает на основе сайта https://tproger.ru')
 print('Скрипт может парсить актуальные статьи с главной страницы, а также статьи по определенным тегам, например Python')
 print('Чтобы парсить страницы по тегам это нужно указать в ссылке, например https://tproger.ru/tag/python/')
@@ -12,9 +8,8 @@ print('Чтобы парсить страницы по тегам это нуж�
 # Параметры для парсинга
 url = str(input('Введите ссылку на сайт: '))
 #TODO написать скрипт корректирующий длинну строки
-N = int(input('Введите длину строки: '))
+#N = int(input('Введите длину строки: '))
 save_pics = str(input('Сохранить картинки в виде ссылок? y/n: '))
-#TODO дописать скрипт по сохранению в файл
 save_file = str(input('Сохранить информацию в файл? y/n: '))
 # Заголовки, чтобы сайт не принял нас за бота
 headers = {
@@ -37,7 +32,6 @@ for item in all_articles_hrefs:
     all_articles_dict[item_text] = item_href
 # Парсинг информации внутри статей
 for article_name, article_href in all_articles_dict.items():
-    #article_name = article_name.rstrip('\n')
     # Берем за основу новую ссылку
     req = requests.get(url=article_href, headers=headers)
     src = req.text
@@ -63,5 +57,12 @@ for article_name, article_href in all_articles_dict.items():
         for image in image_href_list:
             print(f'Картинка: {image}')
 
-    with open('result.txt', 'w', encoding='utf-8') as file:
-        file.write(f'{article_title}\n{article_text}')
+    if save_file == 'y':
+        article_title = article_title.replace('\xa0', '')
+        article_text = article_text.replace('\xa0', '')
+        with open('result.txt', 'a', encoding='utf-8') as file:
+            file.write(f'{article_title}\n{article_text}')
+        if save_pics == 'y':
+            for image in image_href_list:
+                with open('result.txt', 'a', encoding='utf-8') as file:
+                    file.write(f'\n{article_title}\n{article_text}\nКартинка:{image}\n')
