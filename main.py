@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import textwrap as tw
 
 print('Этот скрипт работает на основе сайта https://tproger.ru')
 print('Скрипт может парсить актуальные статьи с главной страницы, а также статьи по определенным тегам, например Python')
@@ -7,8 +8,7 @@ print('Чтобы парсить страницы по тегам это нуж�
 
 # Параметры для парсинга
 url = str(input('Введите ссылку на сайт: '))
-#TODO написать скрипт корректирующий длинну строки
-#N = int(input('Введите длину строки: '))
+N = int(input('Введите длину строки: '))
 save_pics = str(input('Сохранить картинки в виде ссылок? y/n: '))
 save_file = str(input('Сохранить информацию в файл? y/n: '))
 # Заголовки, чтобы сайт не принял нас за бота
@@ -51,8 +51,8 @@ for article_name, article_href in all_articles_dict.items():
         image_href = img.get('href')
         image_href_list.append(image_href)
     # Выводим статьи и картинки
-    print(f'СТАТЬЯ: {article_title}')
-    print(f'ТЕКСТ СТАТЬИ: {article_text}')
+    print(f'СТАТЬЯ: {tw.fill(article_title, width=N)}')
+    print(f'ТЕКСТ СТАТЬИ: {tw.fill(article_text, width=N)}')
     if save_pics == 'y':
         for image in image_href_list:
             print(f'Картинка: {image}')
@@ -61,8 +61,8 @@ for article_name, article_href in all_articles_dict.items():
         article_title = article_title.replace('\xa0', '')
         article_text = article_text.replace('\xa0', '')
         with open('result.txt', 'a', encoding='utf-8') as file:
-            file.write(f'{article_title}\n{article_text}')
+            file.write(f'{tw.fill(article_title, width=N)}\n{tw.fill(article_text, width=N)}')
         if save_pics == 'y':
             for image in image_href_list:
                 with open('result.txt', 'a', encoding='utf-8') as file:
-                    file.write(f'\n{article_title}\n{article_text}\nКартинка:{image}\n')
+                    file.write(f'\n{tw.fill(article_title, width=N)}\n{tw.fill(article_text, width=N)}\nКартинка:{image}\n')
